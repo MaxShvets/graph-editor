@@ -1,21 +1,19 @@
 import * as React from 'react';
 import './App.css';
+import {Graph} from "./Graph";
+import {GraphCanvas} from './GraphCanvas';
 
-import logo from './logo.svg';
+const graph : Graph = [[1, 2], [0, 3], [0, 3], [1, 2]];
+const verticesData = [
+    {position: {x: 15, y: 125}},
+    {position: {x: 140, y: 34}},
+    {position: {x: 51, y: 220}},
+    {position: {x: 100, y: 100}}
+];
 
 class App extends React.Component {
   public render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
-      </div>
-    );
+    return <GraphCanvas graph={graph} verticesData={verticesData}/>;
   }
 }
 
