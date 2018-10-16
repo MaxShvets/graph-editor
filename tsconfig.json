@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "downlevelIteration": true,
     "outDir": "build/dist",
     "module": "esnext",
     "target": "es5",

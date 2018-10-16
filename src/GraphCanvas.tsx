@@ -1,6 +1,7 @@
 import * as React from "react";
-import {Graph, IVertexData} from "./Graph";
+import {AdjacentVertices, Graph, IVertexData, Vertex} from "./Graph";
 import {drawEdge, drawVertex} from "./GraphDrawing";
+import {IPoint} from "./Point";
 
 interface IGraphCanvasProps {
     graph: Graph,
@@ -11,27 +12,36 @@ export class GraphCanvas extends React.Component<IGraphCanvasProps, object> {
     private canvasRef = React.createRef<HTMLCanvasElement>();
 
     public componentDidMount() {
-        const graph = this.props.graph;
-        const verticesData = this.props.verticesData;
-        const context : CanvasRenderingContext2D = this.canvasRef.current!.getContext("2d")!;
+        this.renderGraph(this.props.graph);
+    }
 
-        // draw edges of the graph
-        graph.forEach((adjacentVertices : number[], vertex : number) => {
-            const position = verticesData[vertex].position;
-
-            adjacentVertices.forEach((adjVertex : number) => {
-                const adjPosition = verticesData[adjVertex].position;
-                drawEdge(context, position, adjPosition);
-            });
-        });
-
-        // draw vertices after edges so that they appear on top of edges
-        for (let vertex = 0; vertex < graph.length; vertex++) {
-            drawVertex(context, vertex, verticesData[vertex]);
-        }
+    public componentDidUpdate() {
+        this.renderGraph(this.props.graph);
     }
 
     public render() {
         return <canvas ref={this.canvasRef} width={300} height={300}/>
+    }
+
+    private renderGraph(graph: Graph): void {
+        const verticesData : IVertexData[] = this.props.verticesData;
+        const canvas = this.canvasRef.current!;
+        const context : CanvasRenderingContext2D = canvas.getContext("2d")!;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // draw edges of the graph
+        graph.forEach((adjacentVertices: AdjacentVertices, vertex: Vertex) => {
+            const position : IPoint = verticesData[vertex].position;
+
+            for (const adjVertex of adjacentVertices.values()) {
+                const adjPosition : IPoint = verticesData[adjVertex].position;
+                drawEdge(context, position, adjPosition);
+            }
+        });
+
+        // draw vertices after edges so that they appear on top of edges
+        graph.forEach((_, vertex: Vertex) => {
+            drawVertex(context, vertex, verticesData[vertex]);
+        });
     }
 }
