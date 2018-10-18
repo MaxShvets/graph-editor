@@ -33,10 +33,10 @@ export class GraphCanvas extends React.Component<IGraphCanvasProps, object> {
         graph.forEach((adjacentVertices: AdjacentVertices, vertex: Vertex) => {
             const position : IPoint = verticesData[vertex].position;
 
-            for (const adjVertex of adjacentVertices.values()) {
+            adjacentVertices.forEach((adjVertex: Vertex) => {
                 const adjPosition : IPoint = verticesData[adjVertex].position;
                 drawEdge(context, position, adjPosition);
-            }
+            })
         });
 
         // draw vertices after edges so that they appear on top of edges

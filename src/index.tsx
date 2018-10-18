@@ -6,7 +6,7 @@ import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
 const graph : Graph = createGraph([
-    new Set([1, 2]), new Set([0, 3]), new Set([0, 3]), new Set([1, 2]), new Set([0, 2, 3])
+    [1, 2], [0, 3], [0, 3], [1, 2], [0, 2, 3]
 ]);
 const verticesData = [
     {position: {x: 15, y: 125}},

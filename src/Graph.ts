@@ -1,3 +1,4 @@
+import {ImmutableSet, InterfaceImmutableSet} from "./ImmutableSet";
 import {IPoint} from "./Point";
 
 export interface IVertexData {
@@ -6,7 +7,7 @@ export interface IVertexData {
 }
 
 export type Vertex = number;
-export type AdjacentVertices = Set<Vertex>
+export type AdjacentVertices = InterfaceImmutableSet<Vertex>
 export type IVertexForEachCallback = (adjacentVertices: AdjacentVertices, vertex: Vertex) => void
 export type IVertexMapCallback<T> = (adjacentVertices: AdjacentVertices, vertex: Vertex) => T
 
@@ -18,27 +19,29 @@ export interface IGraph {
     removeEdge(vertex: Vertex, otherVertex: Vertex): Graph;
 }
 
-export function createGraph(adjacentVertices: AdjacentVertices[]) : Graph {
+export function createGraph(adjacentVertices: Array<Iterable<number>>) : Graph {
     return new Graph(adjacentVertices);
 }
 
 export class Graph implements IGraph {
     private readonly graph: AdjacentVertices[];
 
-    public constructor(graph: AdjacentVertices[]) {
-        this.graph = [...graph];
+    public constructor(graph: Array<Iterable<number>>) {
+        this.graph = graph.map((adjacentVertices: Iterable<number>) => {
+            return new ImmutableSet(adjacentVertices);
+        });
     }
 
     public adjacent(vertex: Vertex): AdjacentVertices {
-        return new Set(this.graph[vertex]);
+        return this.graph[vertex];
     }
 
     public forEach(callback: IVertexForEachCallback): void {
-        this.graph.forEach((_, vertex) => callback(this.adjacent(vertex), vertex));
+        this.graph.forEach(callback);
     }
 
     public map<T>(callback: IVertexMapCallback<T>): T[] {
-        return this.graph.map<T>((_, vertex) => callback(this.adjacent(vertex), vertex))
+        return this.graph.map<T>(callback)
     }
 
     public addEdge(vertex: Vertex, otherVertex: Vertex): Graph {
@@ -51,12 +54,8 @@ export class Graph implements IGraph {
 
     private performEdgeOperation(operationName: string, vertex: Vertex, otherVertex: Vertex) : Graph {
         const newGraph: AdjacentVertices[] = [...this.graph];
-        const newVertex: AdjacentVertices = new Set(newGraph[vertex]);
-        newVertex[operationName](otherVertex);
-        newGraph[vertex] = newVertex;
-        const newOtherVertex: AdjacentVertices = new Set(newGraph[otherVertex]);
-        newOtherVertex[operationName](vertex);
-        newGraph[otherVertex] = newOtherVertex;
+        newGraph[vertex] = this.graph[vertex][operationName](otherVertex);
+        newGraph[otherVertex] = this.graph[otherVertex][operationName](vertex);
         return new Graph(newGraph);
     }
 }
