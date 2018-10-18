@@ -17,6 +17,7 @@ export interface IGraph {
     map<T>(callback: IVertexMapCallback<T>): T[];
     addEdge(vertex: Vertex, otherVertex: Vertex): Graph;
     removeEdge(vertex: Vertex, otherVertex: Vertex): Graph;
+    addVertex(): Graph;
 }
 
 export function createGraph(adjacentVertices: Array<Iterable<number>>) : Graph {
@@ -50,6 +51,10 @@ export class Graph implements IGraph {
 
     public removeEdge(vertex: Vertex, otherVertex: Vertex): Graph {
         return this.performEdgeOperation("delete", vertex, otherVertex)
+    }
+
+    public addVertex(): Graph {
+        return new Graph([...this.graph, []])
     }
 
     private performEdgeOperation(operationName: string, vertex: Vertex, otherVertex: Vertex) : Graph {

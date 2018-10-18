@@ -19,6 +19,7 @@ function cell(content: string | number, key: string | number, onclick?: () => vo
 interface IGraphEditorProps {
     graph: Graph,
     updateGraph(newGraph: Graph): void;
+    onAddVertex(): void
 }
 
 export class GraphEditor extends React.Component<IGraphEditorProps, object> {
@@ -59,6 +60,11 @@ export class GraphEditor extends React.Component<IGraphEditorProps, object> {
             ...adjacencyMatrix
         ];
 
-        return <div className={"graph-editor"}>{adjacencyMatrixWithLegend}</div>;
+        return (
+            <div className={"graph-editor"}>
+                <div className={"adjacency-matrix"}>{adjacencyMatrixWithLegend}</div>
+                <button onClick={this.props.onAddVertex}>Add Vertex</button>
+            </div>
+        );
     }
 }

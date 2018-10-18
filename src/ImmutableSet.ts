@@ -11,8 +11,8 @@ export class ImmutableSet<T> implements Iterable<T>{
     public readonly size: number;
     private readonly set: Set<T>;
 
-    constructor(iterable: Iterable<T>) {
-        this.set = new Set(iterable);
+    constructor(iterable?: Iterable<T>) {
+        this.set = new Set(iterable!);
         this.size = this.set.size;
     }
 
