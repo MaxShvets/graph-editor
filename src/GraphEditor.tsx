@@ -1,18 +1,20 @@
 import * as React from "react";
 import {Graph} from "./Graph";
+import "./GraphEditor.css";
 
 const nbsp : string = String.fromCharCode(160);
 const bullet : string = String.fromCharCode(8226);
+const cellClassname: string = "adjacency-indicator";
 
-function cell(content: string | number, key: string | number, onclick?: () => void) : JSX.Element {
+function cell(content: string | number, className: string, key: string | number, onclick?: () => void) : JSX.Element {
     const contentStr : string = typeof content === "string" ? content : content.toString();
     return (
-        <span
-            className={"adjacency-indicator"}
+        <div
+            className={"cell " + className}
             key={key}
             onClick={onclick}>
-            {nbsp + contentStr + nbsp}
-        </span>
+            {contentStr}
+        </div>
     );
 }
 
@@ -26,9 +28,9 @@ export class GraphEditor extends React.Component<IGraphEditorProps, object> {
     public render() {
         const graph : Graph = this.props.graph;
         const legendUpper : JSX.Element[] = [
-            cell(nbsp, "padding"),
+            cell("", "padding", "padding"),
             ...graph.map((_, vertex : number) => {
-                return cell(vertex, vertex);
+                return cell(vertex, "legend", vertex);
             }),
         ];
 
@@ -45,18 +47,18 @@ export class GraphEditor extends React.Component<IGraphEditorProps, object> {
                     clickHandler = () => {this.props.updateGraph(graph.addEdge(vertex, otherVertex))}
                 }
 
-                return cell(adjacencyIndicator, otherVertex, clickHandler);
+                return cell(adjacencyIndicator, cellClassname, otherVertex, clickHandler);
             });
 
             return (
-                <div key={vertex}>
-                    {[cell(vertex, "legend"), ...row]}
+                <div className={"row"} key={vertex}>
+                    {[cell(vertex, "legend", "legend"), ...row]}
                 </div>
             )
         });
 
         const adjacencyMatrixWithLegend : JSX.Element[] = [
-            <div key={"legend-row"}>{legendUpper}</div>,
+            <div className={"row heading"} key={"legend-row"}>{legendUpper}</div>,
             ...adjacencyMatrix
         ];
 

@@ -1,7 +1,3 @@
-.graph-editor {
+#root {
     font-family: monospace;
-}
-
-.adjacency-indicator:hover {
-    cursor: pointer;
 }

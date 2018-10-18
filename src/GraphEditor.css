@@ -1,0 +1,27 @@
+.row, .heading {
+    display: flex;
+}
+
+.cell {
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+}
+
+.row:last-child .cell {
+    border-bottom: none;
+}
+
+.row .cell:last-child {
+    border-right: none;
+}
+
+.adjacency-indicator:hover {
+    cursor: pointer;
+}
