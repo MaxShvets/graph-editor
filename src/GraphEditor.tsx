@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Graph} from "./Graph";
+import {Graph, Vertex} from "./Graph";
 import "./GraphEditor.css";
 
 const nbsp : string = String.fromCharCode(160);
@@ -21,7 +21,8 @@ function cell(content: string | number, className: string, key: string | number,
 interface IGraphEditorProps {
     graph: Graph,
     updateGraph(newGraph: Graph): void;
-    onAddVertex(): void
+    onAddVertex(): void;
+    onRemoveVertex(vertex: Vertex): void;
 }
 
 export class GraphEditor extends React.Component<IGraphEditorProps, object> {
@@ -52,7 +53,11 @@ export class GraphEditor extends React.Component<IGraphEditorProps, object> {
 
             return (
                 <div className={"row"} key={vertex}>
-                    {[cell(vertex, "legend", "legend"), ...row]}
+                    {[
+                        cell(vertex, "legend", "legend"),
+                        ...row,
+                        cell("-", "minus", "minus", () => {this.props.onRemoveVertex(vertex)})
+                    ]}
                 </div>
             )
         });

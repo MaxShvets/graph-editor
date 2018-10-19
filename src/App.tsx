@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.css';
-import {Graph, IVertexData} from "./Graph";
+import {Graph, IVertexData, Vertex} from "./Graph";
 import {GraphCanvas} from './GraphCanvas';
 import {GraphEditor} from "./GraphEditor";
 import {IPoint} from "./Point";
@@ -30,6 +30,7 @@ class App extends React.Component<IAppProps, IAppProps> {
                 graph={this.state.graph}
                 updateGraph={updateGraph}
                 onAddVertex={addVertexHandler}
+                onRemoveVertex={}
             />
         ];
     }
@@ -72,6 +73,10 @@ class App extends React.Component<IAppProps, IAppProps> {
             graph: this.state.graph.addVertex(),
             verticesData: [...this.state.verticesData, {position: newVertexPos}]
         });
+    }
+
+    private removeVertexHandler(vertex: Vertex) {
+
     }
 }
 
