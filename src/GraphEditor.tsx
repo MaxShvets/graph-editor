@@ -1,58 +1,57 @@
 import * as React from "react";
-import {Graph} from "./Graph";
+import {Graph, Vertex} from "./Graph";
 import "./GraphEditor.css";
+
+interface IGraphEditorProps {
+    graph: Graph,
+    toggleEdge(vertex: Vertex, otherVertex: Vertex): void;
+    onAddVertex(): void;
+    onRemoveVertex(vertex: Vertex): void;
+}
 
 const nbsp : string = String.fromCharCode(160);
 const bullet : string = String.fromCharCode(8226);
 const cellClassname: string = "adjacency-indicator";
 
-function cell(content: string | number, className: string, key: string | number, onclick?: () => void) : JSX.Element {
-    const contentStr : string = typeof content === "string" ? content : content.toString();
+function cell(className: string, content?: string | number, key?: string | number, onclick?: () => void) : JSX.Element {
     return (
         <div
             className={"cell " + className}
-            key={key}
+            key={key || className}
             onClick={onclick}>
-            {contentStr}
+            {content === undefined ? "" : content}
         </div>
     );
-}
-
-interface IGraphEditorProps {
-    graph: Graph,
-    updateGraph(newGraph: Graph): void;
-    onAddVertex(): void
 }
 
 export class GraphEditor extends React.Component<IGraphEditorProps, object> {
     public render() {
         const graph : Graph = this.props.graph;
         const legendUpper : JSX.Element[] = [
-            cell("", "padding", "padding"),
+            cell("padding"),
             ...graph.map((_, vertex : number) => {
-                return cell(vertex, "legend", vertex);
+                return cell("legend", vertex, vertex);
             }),
+            cell("border-cell")
         ];
 
         const adjacencyMatrix : JSX.Element[] = graph.map((adjacentVertices, vertex) => {
             const row : JSX.Element[] = graph.map((_, otherVertex : number) => {
-                let adjacencyIndicator : string;
-                let clickHandler : () => void;
-
-                if (adjacentVertices.has(otherVertex)) {
-                    adjacencyIndicator = bullet;
-                    clickHandler = () => {this.props.updateGraph(graph.removeEdge(vertex, otherVertex))}
-                } else {
-                    adjacencyIndicator = nbsp;
-                    clickHandler = () => {this.props.updateGraph(graph.addEdge(vertex, otherVertex))}
-                }
-
-                return cell(adjacencyIndicator, cellClassname, otherVertex, clickHandler);
+                return cell(
+                    cellClassname,
+                    adjacentVertices.has(otherVertex) ? bullet : nbsp,
+                    otherVertex,
+                    () => {this.props.toggleEdge(vertex, otherVertex)}
+                );
             });
 
             return (
-                <div className={"row"} key={vertex}>
-                    {[cell(vertex, "legend", "legend"), ...row]}
+                <div className={"row row-vertex"} key={vertex}>
+                    {[
+                        cell("legend", vertex),
+                        ...row,
+                        cell("minus", "-", undefined, () => this.props.onRemoveVertex(vertex))
+                    ]}
                 </div>
             )
         });

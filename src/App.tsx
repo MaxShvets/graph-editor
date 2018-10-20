@@ -1,41 +1,62 @@
 import * as React from 'react';
 import './App.css';
-import {Graph, IVertexData} from "./Graph";
+import {Graph, IVertexData, Vertex} from "./Graph";
 import {GraphCanvas} from './GraphCanvas';
 import {GraphEditor} from "./GraphEditor";
+import {IKeyedEntries} from "./IKeyedEntries";
 import {IPoint} from "./Point";
 
 interface IAppProps {
     graph: Graph,
-    verticesData: IVertexData[]
+    verticesData: IKeyedEntries<Vertex, IVertexData>
 }
 
-class App extends React.Component<IAppProps, IAppProps> {
+interface IAppState {
+    graph: Graph,
+    verticesData: Map<Vertex, IVertexData>
+}
+
+class App extends React.Component<IAppProps, IAppState> {
     public constructor(props : IAppProps) {
         super(props);
         this.state = {
             graph: props.graph,
-            verticesData: props.verticesData
+            verticesData: new Map(props.verticesData.entries())
         }
     }
 
     public render() {
-        const updateGraph = this.updateGraph.bind(this);
+        const toggleEdge = this.toggleVertex.bind(this);
         const addVertexHandler = this.addVertexHandler.bind(this);
+        const removeVertexHandler = this.removeVertexHandler.bind(this);
 
         return [
             <GraphCanvas key={"canvas"} graph={this.state.graph} verticesData={this.state.verticesData}/>,
             <GraphEditor
                 key={"editor"}
                 graph={this.state.graph}
-                updateGraph={updateGraph}
+                toggleEdge={toggleEdge}
                 onAddVertex={addVertexHandler}
+                onRemoveVertex={removeVertexHandler}
             />
         ];
     }
 
-    private updateGraph(newGraph: Graph): void {
-        this.setState({graph: newGraph});
+    private toggleVertex(vertex: Vertex, otherVertex: Vertex): void {
+        const graph: Graph = this.state.graph;
+        const newGraph: Graph = graph.adjacent(vertex).has(otherVertex)
+            ? graph.removeEdge(vertex, otherVertex)
+            : graph.addEdge(vertex, otherVertex);
+        this.setState({ graph: newGraph });
+    }
+
+    private removeVertexHandler(vertex: Vertex) {
+        const verticesDataCopy: Map<Vertex, IVertexData> = new Map(this.state.verticesData);
+        verticesDataCopy.delete(vertex);
+        this.setState({
+            graph: this.state.graph.removeVertex(vertex),
+            verticesData: verticesDataCopy
+        });
     }
 
     private addVertexHandler() {
@@ -68,9 +89,13 @@ class App extends React.Component<IAppProps, IAppProps> {
             newVertexPos.y += Math.random() * 50;
         }
 
+        const verticesDataCopy: Map<Vertex, IVertexData> = new Map(this.state.verticesData);
+        const newVertex: Vertex = Math.max(...verticesDataCopy.keys()) + 1;
+        verticesDataCopy.set(newVertex, {position: newVertexPos});
+
         this.setState({
             graph: this.state.graph.addVertex(),
-            verticesData: [...this.state.verticesData, {position: newVertexPos}]
+            verticesData: verticesDataCopy
         });
     }
 }

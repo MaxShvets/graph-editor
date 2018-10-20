@@ -5,7 +5,7 @@ import {IPoint} from "./Point";
 
 interface IGraphCanvasProps {
     graph: Graph,
-    verticesData: IVertexData[]
+    verticesData: Map<Vertex, IVertexData>
 }
 
 export class GraphCanvas extends React.Component<IGraphCanvasProps, object> {
@@ -24,24 +24,24 @@ export class GraphCanvas extends React.Component<IGraphCanvasProps, object> {
     }
 
     private renderGraph(graph: Graph): void {
-        const verticesData : IVertexData[] = this.props.verticesData;
+        const verticesData : Map<Vertex, IVertexData> = this.props.verticesData;
         const canvas = this.canvasRef.current!;
         const context : CanvasRenderingContext2D = canvas.getContext("2d")!;
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // draw edges of the graph
         graph.forEach((adjacentVertices: AdjacentVertices, vertex: Vertex) => {
-            const position : IPoint = verticesData[vertex].position;
+            const position : IPoint = verticesData.get(vertex)!.position;
 
             adjacentVertices.forEach((adjVertex: Vertex) => {
-                const adjPosition : IPoint = verticesData[adjVertex].position;
+                const adjPosition : IPoint = verticesData.get(adjVertex)!.position;
                 drawEdge(context, position, adjPosition);
             })
         });
 
         // draw vertices after edges so that they appear on top of edges
         graph.forEach((_, vertex: Vertex) => {
-            drawVertex(context, vertex, verticesData[vertex]);
+            drawVertex(context, vertex, verticesData.get(vertex)!);
         });
     }
 }

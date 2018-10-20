@@ -1,3 +1,4 @@
+import {IKeyedEntries} from "./IKeyedEntries";
 import {ImmutableSet, InterfaceImmutableSet} from "./ImmutableSet";
 import {IPoint} from "./Point";
 
@@ -7,9 +8,12 @@ export interface IVertexData {
 }
 
 export type Vertex = number;
-export type AdjacentVertices = InterfaceImmutableSet<Vertex>
-export type IVertexForEachCallback = (adjacentVertices: AdjacentVertices, vertex: Vertex) => void
-export type IVertexMapCallback<T> = (adjacentVertices: AdjacentVertices, vertex: Vertex) => T
+export type AdjacentVertices = InterfaceImmutableSet<Vertex>;
+export type IVertexForEachCallback = (adjacentVertices: AdjacentVertices, vertex: Vertex) => void;
+export type IVertexMapCallback<T> = (adjacentVertices: AdjacentVertices, vertex: Vertex) => T;
+type InternalGraph = Map<Vertex, AdjacentVertices>;
+type GraphBase = IKeyedEntries<Vertex, Iterable<Vertex>>
+
 
 export interface IGraph {
     adjacent(vertex: Vertex): AdjacentVertices;
@@ -18,23 +22,29 @@ export interface IGraph {
     addEdge(vertex: Vertex, otherVertex: Vertex): Graph;
     removeEdge(vertex: Vertex, otherVertex: Vertex): Graph;
     addVertex(): Graph;
+    removeVertex(vertex: Vertex): Graph
 }
 
-export function createGraph(adjacentVertices: Array<Iterable<number>>) : Graph {
+export function createGraph(adjacentVertices: GraphBase) : Graph {
     return new Graph(adjacentVertices);
 }
 
 export class Graph implements IGraph {
-    private readonly graph: AdjacentVertices[];
+    private readonly graph: InternalGraph;
 
-    public constructor(graph: Array<Iterable<number>>) {
-        this.graph = graph.map((adjacentVertices: Iterable<number>) => {
-            return new ImmutableSet(adjacentVertices);
-        });
+    public constructor(base?: GraphBase) {
+        this.graph = new Map<Vertex, AdjacentVertices>();
+
+        if (base) {
+            for (const [vertex, adjacentVertices] of base.entries()) {
+                this.graph.set(vertex, new ImmutableSet(adjacentVertices))
+            }
+        }
     }
 
     public adjacent(vertex: Vertex): AdjacentVertices {
-        return this.graph[vertex];
+        this.validateVertices(vertex);
+        return this.graph.get(vertex)!;
     }
 
     public forEach(callback: IVertexForEachCallback): void {
@@ -42,7 +52,13 @@ export class Graph implements IGraph {
     }
 
     public map<T>(callback: IVertexMapCallback<T>): T[] {
-        return this.graph.map<T>(callback)
+        const result = [];
+
+        for (const [vertex, adjacentVertices] of this.graph) {
+            result.push(callback(adjacentVertices, vertex));
+        }
+
+        return result;
     }
 
     public addEdge(vertex: Vertex, otherVertex: Vertex): Graph {
@@ -54,13 +70,46 @@ export class Graph implements IGraph {
     }
 
     public addVertex(): Graph {
-        return new Graph([...this.graph, []])
+        const newVertex = this.getNewVertex();
+        this.graph.set(newVertex, new ImmutableSet());
+        const newGraph: Graph = new Graph(this.graph);
+        this.graph.delete(newVertex);
+        return newGraph;
+    }
+
+    public removeVertex(vertex: Vertex): Graph {
+        this.validateVertices(vertex);
+        const newGraph: InternalGraph = new Map(this.graph);
+        newGraph.delete(vertex);
+        newGraph.forEach((adjacent: AdjacentVertices, otherVertex: Vertex) => {
+            newGraph.set(otherVertex, adjacent.delete(vertex))
+        });
+        return new Graph(newGraph);
+    }
+
+    private getNewVertex(): Vertex {
+        let newVertex: number = 0;
+
+        this.graph.forEach((_, vertex: Vertex) => {
+            newVertex = newVertex < vertex ? vertex : newVertex;
+        });
+
+        return newVertex + 1;
     }
 
     private performEdgeOperation(operationName: string, vertex: Vertex, otherVertex: Vertex) : Graph {
-        const newGraph: AdjacentVertices[] = [...this.graph];
-        newGraph[vertex] = this.graph[vertex][operationName](otherVertex);
-        newGraph[otherVertex] = this.graph[otherVertex][operationName](vertex);
+        this.validateVertices(vertex, otherVertex);
+        const newGraph: InternalGraph = new Map(this.graph);
+        newGraph.set(vertex, this.graph.get(vertex)![operationName](otherVertex));
+        newGraph.set(otherVertex, this.graph.get(otherVertex)![operationName](vertex));
         return new Graph(newGraph);
+    }
+
+    private validateVertices(...vertices: Vertex[]): void {
+        vertices.forEach((vertex) => {
+            if (!this.graph.has(vertex)) {
+                throw new RangeError(`Vertex ${vertex} is missing in graph ${this}`);
+            }
+        });
     }
 }
