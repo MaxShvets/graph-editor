@@ -1,5 +1,6 @@
 import {IKeyedEntries} from "./IKeyedEntries";
-import {ImmutableSet, InterfaceImmutableSet} from "./ImmutableSet";
+import {InterfaceImmutableSet} from "./Immutable";
+import {ImmutableSet} from "./Immutable/Set";
 import {IPoint} from "./Point";
 
 export interface IVertexData {
