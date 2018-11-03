@@ -9,14 +9,14 @@ export class ImmutableMap<K, V> implements InterfaceImmutableMap<K, V> {
         this.size = this.map.size;
     }
 
-    public set(key: K, value: V): ImmutableMap<K, V> {
-        return this.copy((newMap: Map<K, V>) => {
+    public set(key: K, value: V): InterfaceImmutableMap<K, V> {
+        return this.copyAndUpdate((newMap: Map<K, V>) => {
             newMap.set(key, value);
         });
     }
 
-    public delete(key: K): ImmutableMap<K, V> {
-        return this.copy((newMap: Map<K, V>) => {
+    public delete(key: K): InterfaceImmutableMap<K, V> {
+        return this.copyAndUpdate((newMap: Map<K, V>) => {
             newMap.delete(key);
         });
     }
@@ -37,9 +37,9 @@ export class ImmutableMap<K, V> implements InterfaceImmutableMap<K, V> {
         return this.map[Symbol.iterator]();
     }
 
-    private copy(transform: (newMap: Map<K, V>) => void): ImmutableMap<K, V> {
+    public copyAndUpdate(updateFunction: (map: Map<K, V>) => void): InterfaceImmutableMap<K, V> {
         const newMap: ImmutableMap<K, V> = new ImmutableMap<K, V>(this.map);
-        transform(newMap.map);
+        updateFunction(newMap.map);
         return newMap;
     }
 }

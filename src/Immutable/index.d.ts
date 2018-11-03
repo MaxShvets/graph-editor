@@ -14,5 +14,6 @@ export interface InterfaceImmutableMap<K, V> extends Iterable<[K, V]> {
     forEach(callbackfn: (value: V, key: K, map: ReadonlyMap<K, V>) => void, thisArg?: any): void;
     get(key: K): V | undefined;
     has(key: K): boolean;
+    copyAndUpdate(updateFunction: (map: Map<K, V>) => void): InterfaceImmutableMap<K, V>;
     [Symbol.iterator](): IterableIterator<[K, V]>;
 }
