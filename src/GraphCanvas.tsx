@@ -1,11 +1,11 @@
 import * as React from "react";
-import {AdjacentVertices, Graph, IVertexData, Vertex} from "./Graph";
+import {InterfacePoint} from "./Geometry";
+import {AdjacentVertices, VertexID} from "./Graph";
 import {drawEdge, drawVertex} from "./GraphDrawing";
-import {IPoint} from "./Point";
+import {GraphicGraph} from "./UI/GraphicGraph";
 
 interface IGraphCanvasProps {
-    graph: Graph,
-    verticesData: Map<Vertex, IVertexData>
+    graph: GraphicGraph
 }
 
 export class GraphCanvas extends React.Component<IGraphCanvasProps, object> {
@@ -23,25 +23,24 @@ export class GraphCanvas extends React.Component<IGraphCanvasProps, object> {
         return <canvas ref={this.canvasRef} width={300} height={300}/>
     }
 
-    private renderGraph(graph: Graph): void {
-        const verticesData : Map<Vertex, IVertexData> = this.props.verticesData;
+    private renderGraph(graph: GraphicGraph): void {
         const canvas = this.canvasRef.current!;
         const context : CanvasRenderingContext2D = canvas.getContext("2d")!;
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // draw edges of the graph
-        graph.forEach((adjacentVertices: AdjacentVertices, vertex: Vertex) => {
-            const position : IPoint = verticesData.get(vertex)!.position;
+        graph.forEach((adjacentVertices: AdjacentVertices, vertexID: VertexID) => {
+            const position : InterfacePoint = graph.data(vertexID).position;
 
-            adjacentVertices.forEach((adjVertex: Vertex) => {
-                const adjPosition : IPoint = verticesData.get(adjVertex)!.position;
+            adjacentVertices.forEach((adjVertex: VertexID) => {
+                const adjPosition : InterfacePoint = graph.data(adjVertex).position;
                 drawEdge(context, position, adjPosition);
             })
         });
 
         // draw vertices after edges so that they appear on top of edges
-        graph.forEach((_, vertex: Vertex) => {
-            drawVertex(context, vertex, verticesData.get(vertex)!);
+        graph.forEach((_, vertex: VertexID) => {
+            drawVertex(context, vertex, graph.data(vertex));
         });
     }
 }

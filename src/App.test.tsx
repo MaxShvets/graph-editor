@@ -1,18 +1,19 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './App';
-import {createGraph, Graph} from "./Graph";
+import {Graph} from "./Graph/Graph";
+import {ImmutableSet} from "./Immutable/Set";
+import {GraphicGraph, InterfaceGraphicVertexData} from "./UI/GraphicGraph";
 
-const graph : Graph = createGraph([[1, 2], [0, 3], [0, 3], [1, 2]]);
-const verticesData = [
-    {position: {x: 15, y: 125}},
-    {position: {x: 140, y: 34}},
-    {position: {x: 51, y: 220}},
-    {position: {x: 100, y: 100}}
-];
+const graph : GraphicGraph = new Graph<InterfaceGraphicVertexData>([
+    [0, {adjacent: new ImmutableSet([1, 2]), data: {position: {x: 15, y: 125}}}],
+    [1, {adjacent: new ImmutableSet([0, 3]), data: {position: {x: 140, y: 34}}}],
+    [2, {adjacent: new ImmutableSet([0, 3]), data: {position: {x: 51, y: 220}}}],
+    [3, {adjacent: new ImmutableSet([1, 2]), data: {position: {x: 100, y: 100}}}]
+]);
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<App graph={graph} verticesData={verticesData} />, div);
+  ReactDOM.render(<App graph={graph} />, div);
   ReactDOM.unmountComponentAtNode(div);
 });

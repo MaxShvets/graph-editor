@@ -13,6 +13,7 @@ export interface InterfaceImmutableMap<K, V> extends Iterable<[K, V]> {
     delete(key: K): InterfaceImmutableMap<K, V>;
     forEach(callbackfn: (value: V, key: K, map: ReadonlyMap<K, V>) => void, thisArg?: any): void;
     get(key: K): V | undefined;
+    keys(): IterableIterator<K>;
     has(key: K): boolean;
     copyAndUpdate(updateFunction: (map: Map<K, V>) => void): InterfaceImmutableMap<K, V>;
     [Symbol.iterator](): IterableIterator<[K, V]>;

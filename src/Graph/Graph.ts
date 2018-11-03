@@ -6,10 +6,12 @@ type InnerGraphRepresentation<VertexData> = InterfaceImmutableMap<VertexID, Vert
 type adjacentVerticesTransformation = (adjacent: AdjacentVertices) => AdjacentVertices;
 
 export class Graph<VertexData> implements InterfaceGraph<VertexData> {
+    private nextVertexID: VertexID;
     private graph: InnerGraphRepresentation<VertexData>;
 
     public constructor(base?: Iterable<[VertexID, Vertex<VertexData>]>) {
         this.graph = new ImmutableMap(base || []);
+        this.nextVertexID = base ? Math.max(...this.graph.keys()) + 1 : 0;
     }
 
     public adjacent(vertexID: VertexID): AdjacentVertices;
@@ -18,6 +20,11 @@ export class Graph<VertexData> implements InterfaceGraph<VertexData> {
         this.ensureGraphHasVertices(vertexID);
         const adjacent: AdjacentVertices = this.graph.get(vertexID)!.adjacent;
         return otherVertexID ? adjacent.has(otherVertexID) : adjacent;
+    }
+
+    public data(vertexID: VertexID): VertexData {
+        this.ensureGraphHasVertices(vertexID);
+        return this.graph.get(vertexID)!.data;
     }
 
     public addEdge(vertexID: VertexID, otherVertexID: VertexID): InterfaceGraph<VertexData> {
@@ -38,13 +45,10 @@ export class Graph<VertexData> implements InterfaceGraph<VertexData> {
         );
     }
 
-    public addVertex(vertexID: VertexID, vertex: Vertex<VertexData>): InterfaceGraph<VertexData> {
+    public addVertex(vertex: Vertex<VertexData>): InterfaceGraph<VertexData> {
         this.ensureGraphHasVertices(...vertex.adjacent);
-        if (!this.graph.has(vertexID)) {
-            return this.fromImmutableMap(this.graph.set(vertexID, vertex));
-        } else {
-            return this;
-        }
+        this.nextVertexID += 1;
+        return this.fromImmutableMap(this.graph.set(this.nextVertexID - 1, vertex));
     }
 
     public removeVertex(vertexID: VertexID): InterfaceGraph<VertexData> {
@@ -59,15 +63,15 @@ export class Graph<VertexData> implements InterfaceGraph<VertexData> {
     }
 
     public forEach(callback: VertexAction<void, VertexData>): void {
-        this.graph.forEach((vertex: Vertex<VertexData>) => {
-            callback(vertex.adjacent, vertex);
+        this.graph.forEach((vertex: Vertex<VertexData>, vertexID: VertexID) => {
+            callback(vertex.adjacent, vertexID);
         });
     }
 
     public map<T>(callback: VertexAction<T, VertexData>): T[] {
         const result: T[] = [];
-        this.graph.forEach((vertex: Vertex<VertexData>) => {
-            result.push(callback(vertex.adjacent, vertex));
+        this.graph.forEach((vertex: Vertex<VertexData>, vertexID: VertexID) => {
+            result.push(callback(vertex.adjacent, vertexID));
         });
         return result;
     }
@@ -91,6 +95,7 @@ export class Graph<VertexData> implements InterfaceGraph<VertexData> {
     private fromImmutableMap(map: InnerGraphRepresentation<VertexData>): InterfaceGraph<VertexData> {
         const newGraph: Graph<VertexData> = new Graph();
         newGraph.graph = map;
+        newGraph.nextVertexID = this.nextVertexID;
         return newGraph;
     }
 

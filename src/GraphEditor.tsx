@@ -1,12 +1,13 @@
 import * as React from "react";
-import {Graph, Vertex} from "./Graph";
+import {VertexID} from "./Graph";
 import "./GraphEditor.css";
+import {GraphicGraph} from "./UI/GraphicGraph";
 
 interface IGraphEditorProps {
-    graph: Graph,
-    toggleEdge(vertex: Vertex, otherVertex: Vertex): void;
+    graph: GraphicGraph,
+    toggleEdge(vertex: VertexID, otherVertex: VertexID): void;
     onAddVertex(): void;
-    onRemoveVertex(vertex: Vertex): void;
+    onRemoveVertex(vertex: VertexID): void;
 }
 
 const nbsp : string = String.fromCharCode(160);
@@ -26,7 +27,7 @@ function cell(className: string, content?: string | number, key?: string | numbe
 
 export class GraphEditor extends React.Component<IGraphEditorProps, object> {
     public render() {
-        const graph : Graph = this.props.graph;
+        const graph : GraphicGraph = this.props.graph;
         const legendUpper : JSX.Element[] = [
             cell("padding"),
             ...graph.map((_, vertex : number) => {

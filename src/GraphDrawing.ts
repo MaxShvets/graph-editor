@@ -1,10 +1,10 @@
-import {IVertexData} from "./Graph";
-import {IPoint} from "./Point";
+import {InterfacePoint} from "./Geometry";
+import {InterfaceGraphicVertexData} from "./UI/GraphicGraph";
 
 export function drawVertex(
     context : CanvasRenderingContext2D,
     vertexID : number,
-    {label, position} : IVertexData) : void
+    {label, position} : InterfaceGraphicVertexData) : void
 {
     const {x, y} = position;
     context.fillStyle = "#fff";
@@ -25,7 +25,7 @@ export function drawVertex(
     context.fillText(label || vertexID.toString(), x, y);
 }
 
-export function drawEdge(context : CanvasRenderingContext2D, from : IPoint, to : IPoint) : void {
+export function drawEdge(context : CanvasRenderingContext2D, from : InterfacePoint, to : InterfacePoint) : void {
     context.lineWidth = 5;
     context.beginPath();
     context.moveTo(from.x, from.y);

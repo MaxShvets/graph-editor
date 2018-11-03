@@ -29,6 +29,10 @@ export class ImmutableMap<K, V> implements InterfaceImmutableMap<K, V> {
         return this.map.get(key);
     }
 
+    public keys(): IterableIterator<K> {
+        return this.map.keys();
+    }
+
     public has(key: K): boolean {
         return this.map.has(key);
     }
