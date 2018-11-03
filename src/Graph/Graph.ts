@@ -3,7 +3,7 @@ import {ImmutableMap} from "../Immutable/Map";
 import {AdjacentVertices, InterfaceGraph, Vertex, VertexAction, VertexID} from "./index";
 
 type InnerGraphRepresentation<VertexData> = InterfaceImmutableMap<VertexID, Vertex<VertexData>>;
-type adjacentVerticesTransformation = (adjacent: AdjacentVertices) => AdjacentVertices;
+type AdjacentVerticesTransformation = (adjacent: AdjacentVertices) => AdjacentVertices;
 
 export class Graph<VertexData> implements InterfaceGraph<VertexData> {
     private nextVertexID: VertexID;
@@ -84,7 +84,7 @@ export class Graph<VertexData> implements InterfaceGraph<VertexData> {
         return this.changeAdjacentVertices(vertexID, adjacent => adjacent.add(otherVertexID));
     }
 
-    private changeAdjacentVertices(id: VertexID, transformation: adjacentVerticesTransformation): Vertex<VertexData> {
+    private changeAdjacentVertices(id: VertexID, transformation: AdjacentVerticesTransformation): Vertex<VertexData> {
         const vertex: Vertex<VertexData> = this.graph.get(id)!;
         return {
             adjacent: transformation(vertex.adjacent),

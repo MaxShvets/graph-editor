@@ -1,10 +1,10 @@
 import * as React from 'react';
 import './App.css';
 import {VertexID} from "./Graph";
-import {GraphCanvas} from './GraphCanvas';
-import {GraphEditor} from "./GraphEditor";
+import {GraphCanvas} from './GraphUI/GraphCanvas';
+import {GraphEditor} from "./GraphUI/GraphEditor";
+import {GraphicGraph} from "./GraphUI/GraphicGraph";
 import {ImmutableSet} from "./Immutable/Set";
-import {GraphicGraph} from "./UI/GraphicGraph";
 
 interface IAppProps {
     graph: GraphicGraph

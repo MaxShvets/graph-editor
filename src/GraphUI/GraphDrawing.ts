@@ -1,5 +1,5 @@
-import {InterfacePoint} from "./Geometry";
-import {InterfaceGraphicVertexData} from "./UI/GraphicGraph";
+import {InterfacePoint} from "../Geometry";
+import {InterfaceGraphicVertexData} from "./GraphicGraph";
 
 export function drawVertex(
     context : CanvasRenderingContext2D,

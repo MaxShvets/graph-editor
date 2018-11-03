@@ -2,10 +2,10 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './App';
 import {Graph} from "./Graph/Graph";
+import {GraphicGraph, InterfaceGraphicVertexData} from "./GraphUI/GraphicGraph";
 import {ImmutableSet} from "./Immutable/Set";
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
-import {GraphicGraph, InterfaceGraphicVertexData} from "./UI/GraphicGraph";
 
 const graph : GraphicGraph = new Graph<InterfaceGraphicVertexData>([
     [0, {adjacent: new ImmutableSet([1, 2]), data: {position: {x: 15, y: 125}}}],

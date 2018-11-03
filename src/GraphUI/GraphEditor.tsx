@@ -1,7 +1,7 @@
 import * as React from "react";
-import {VertexID} from "./Graph";
+import {VertexID} from "../Graph";
 import "./GraphEditor.css";
-import {GraphicGraph} from "./UI/GraphicGraph";
+import {GraphicGraph} from "./GraphicGraph";
 
 interface IGraphEditorProps {
     graph: GraphicGraph,

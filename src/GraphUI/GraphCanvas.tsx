@@ -1,8 +1,8 @@
 import * as React from "react";
-import {InterfacePoint} from "./Geometry";
-import {AdjacentVertices, VertexID} from "./Graph";
+import {InterfacePoint} from "../Geometry/index";
+import {AdjacentVertices, VertexID} from "../Graph/index";
 import {drawEdge, drawVertex} from "./GraphDrawing";
-import {GraphicGraph} from "./UI/GraphicGraph";
+import {GraphicGraph} from "./GraphicGraph";
 
 interface IGraphCanvasProps {
     graph: GraphicGraph
