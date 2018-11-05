@@ -4,14 +4,20 @@ import {VertexID} from "./Graph";
 import {GraphCanvas} from './GraphUI/GraphCanvas';
 import {GraphEditor} from "./GraphUI/GraphEditor";
 import {GraphicGraph} from "./GraphUI/GraphicGraph";
+import {VertexData} from "./GraphUI/VertexData";
 import {ImmutableSet} from "./Immutable/Set";
 
-interface IAppProps {
+interface InterfaceAppProps {
     graph: GraphicGraph
 }
 
-class App extends React.Component<IAppProps, IAppProps> {
-    public constructor(props : IAppProps) {
+interface InterfaceAppState {
+    graph: GraphicGraph,
+    currentDisplayedVertex?: VertexID
+}
+
+class App extends React.Component<InterfaceAppProps, InterfaceAppState> {
+    public constructor(props : InterfaceAppProps) {
         super(props);
         this.state = {
             graph: props.graph
@@ -19,26 +25,52 @@ class App extends React.Component<IAppProps, IAppProps> {
     }
 
     public render() {
+        const currentDisplayedVertex = this.state.currentDisplayedVertex;
         const toggleEdge = this.toggleVertex.bind(this);
         const addVertexHandler = this.addVertexHandler.bind(this);
         const removeVertexHandler = this.removeVertex.bind(this);
+        const vertexClickHandler = this.handleVertexClick.bind(this);
 
-        return [
-            <GraphCanvas key={"canvas"} graph={this.state.graph}/>,
-            <GraphEditor
-                key={"editor"}
-                graph={this.state.graph}
-                toggleEdge={toggleEdge}
-                onAddVertex={addVertexHandler}
-                onRemoveVertex={removeVertexHandler}
-            />
-        ];
+        return (
+            <div>
+                <div>
+                    <GraphCanvas
+                        graph={this.state.graph} width={300} height={300}
+                        vertexClickHandler={vertexClickHandler}/>
+                    {
+                        currentDisplayedVertex !== undefined &&
+                        <VertexData
+                            vertexID={currentDisplayedVertex}
+                            data={this.state.graph.data(currentDisplayedVertex)}
+                            adjacent={this.state.graph.adjacent(currentDisplayedVertex)}/>
+                    }
+                </div>
+                <GraphEditor
+                    graph={this.state.graph}
+                    toggleEdge={toggleEdge}
+                    onAddVertex={addVertexHandler}
+                    onRemoveVertex={removeVertexHandler}/>
+            </div>
+        );
     }
 
     private removeVertex(vertexID: VertexID): void {
-        this.setState({
+        const newState: InterfaceAppState = {
             graph: this.state.graph.removeVertex(vertexID)
-        });
+        };
+
+        const currentDisplayedVertex: VertexID | undefined = this.state.currentDisplayedVertex;
+        if (currentDisplayedVertex !== undefined && currentDisplayedVertex === vertexID) {
+            newState.currentDisplayedVertex = undefined
+        }
+
+        this.setState(newState);
+    }
+
+    private handleVertexClick(vertexID: VertexID): void {
+        this.setState({
+            currentDisplayedVertex: vertexID
+        })
     }
 
     private toggleVertex(vertex: VertexID, otherVertex: VertexID): void {

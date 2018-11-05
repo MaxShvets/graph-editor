@@ -1,4 +1,4 @@
-export interface InterfacePoint {
+export type Point = {
     x: number,
     y: number
 }

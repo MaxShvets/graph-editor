@@ -1,9 +1,10 @@
-import {InterfacePoint} from "../Geometry";
-import {InterfaceGraph} from "../Graph";
+import {Point} from "../Geometry";
+import {InterfaceGraph, Vertex} from "../Graph";
 
 export interface InterfaceGraphicVertexData {
-    position: InterfacePoint,
+    position: Point,
     label?: string
 }
 
+export type GraphicGraphVertex = Vertex<InterfaceGraphicVertexData>
 export type GraphicGraph = InterfaceGraph<InterfaceGraphicVertexData>;

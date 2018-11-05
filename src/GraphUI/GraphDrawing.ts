@@ -1,4 +1,4 @@
-import {InterfacePoint} from "../Geometry";
+import {Point} from "../Geometry";
 import {InterfaceGraphicVertexData} from "./GraphicGraph";
 
 export function drawVertex(
@@ -25,7 +25,7 @@ export function drawVertex(
     context.fillText(label || vertexID.toString(), x, y);
 }
 
-export function drawEdge(context : CanvasRenderingContext2D, from : InterfacePoint, to : InterfacePoint) : void {
+export function drawEdge(context : CanvasRenderingContext2D, from : Point, to : Point) : void {
     context.lineWidth = 5;
     context.beginPath();
     context.moveTo(from.x, from.y);
